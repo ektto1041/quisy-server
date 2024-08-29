@@ -1,9 +1,9 @@
 package com.karpo.quisy.repositories;
 
-import com.karpo.quisy.entities.Workbook;
+import com.karpo.quisy.entities.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TestRepository extends JpaRepository<Workbook, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
 }
