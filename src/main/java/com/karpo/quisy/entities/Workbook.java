@@ -1,17 +1,27 @@
 package com.karpo.quisy.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "workbook")
+@Getter
+@Setter
 public class Workbook {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long workbookId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private User user;
 
     @Column(length = 50)
     private String title;
@@ -24,9 +34,4 @@ public class Workbook {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    public Workbook(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
 }
