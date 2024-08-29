@@ -1,13 +1,7 @@
 package com.karpo.quisy;
 
-import com.karpo.quisy.entities.Tag;
-import com.karpo.quisy.entities.User;
-import com.karpo.quisy.entities.Workbook;
-import com.karpo.quisy.entities.WorkbookTag;
-import com.karpo.quisy.repositories.TagRepository;
-import com.karpo.quisy.repositories.UserRepository;
-import com.karpo.quisy.repositories.WorkbookRepository;
-import com.karpo.quisy.repositories.WorkbookTagRepository;
+import com.karpo.quisy.entities.*;
+import com.karpo.quisy.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -26,6 +20,12 @@ public class DataInit implements ApplicationRunner {
 
     @Autowired
     private WorkbookTagRepository workbookTagRepository;
+
+    @Autowired
+    private QuestionTypeRepository questionTypeRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -46,5 +46,17 @@ public class DataInit implements ApplicationRunner {
         workbookTag.setWorkbook(savedWorkbook);
         workbookTag.setTag(savedTag);
         workbookTagRepository.save(workbookTag);
+
+        QuestionType questionType = new QuestionType();
+        questionType.setName("JAVA");
+        QuestionType savedQuestionType = questionTypeRepository.save(questionType);
+
+        Question question = new Question();
+        question.setQuestionType(savedQuestionType);
+        question.setContent("What is this");
+        question.setAnswer("asdf");
+        question.setSequence(1);
+        question.setWorkbook(savedWorkbook);
+        questionRepository.save(question);
     }
 }
