@@ -11,23 +11,28 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
 @Setter
-public class Workbook {
+@Getter
+public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long workbookId;
+    private Long questionId;
+
+    @OneToOne
+    @JoinColumn(name = "question_type_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private QuestionType questionType;
+
+    private String content;
+
+    private String answer;
+
+    private int sequence;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    private User user;
-
-    @Column(length = 50)
-    private String title;
-
-    @Column(length = 100)
-    private String description;
+    @JoinColumn(name = "workbook_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Workbook workbook;
 
     @CreatedDate
     private LocalDateTime createdAt;
