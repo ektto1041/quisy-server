@@ -22,5 +22,16 @@ public class WorkbookPreviewDto {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<String> tags = new ArrayList<>();
+    private List<String> tags;
+
+    public WorkbookPreviewDto(Long workbookId, Long userId, String userNickname, String userProfileImage, String title, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.workbookId = workbookId;
+        this.userId = userId;
+        this.userNickname = userNickname;
+        this.userProfileImage = userProfileImage;
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }
