@@ -1,7 +1,7 @@
 package com.karpo.quisy.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
