@@ -1,11 +1,13 @@
 package com.karpo.quisy.helpers;
 
+import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.entities.Tag;
 import com.karpo.quisy.entities.User;
 import com.karpo.quisy.entities.Workbook;
 import com.karpo.quisy.entities.WorkbookTag;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,4 +47,31 @@ public class WorkbookBuilder {
 
         return workbookTags;
     }
+
+    public class WorkbookPreviewDtoBuilder {
+        public WorkbookPreviewDto one(int i) {
+            WorkbookPreviewDto workbookPreviewDto = new WorkbookPreviewDto();
+            workbookPreviewDto.setWorkbookId((long) i);
+            workbookPreviewDto.setUserId((long) 1);
+            workbookPreviewDto.setUserNickname("UserNickName 1");
+            workbookPreviewDto.setUserProfileImage("UserProfileImage 1");
+            workbookPreviewDto.setTitle("Title " + i);
+            workbookPreviewDto.setDescription("Description " + i);
+            workbookPreviewDto.setUpdatedAt(LocalDateTime.now());
+            workbookPreviewDto.setCreatedAt(LocalDateTime.now());
+
+            return workbookPreviewDto;
+        }
+
+        public List<WorkbookPreviewDto> many(int max) {
+            List<WorkbookPreviewDto> result = new ArrayList<>();
+            for(int i=0; i<max; i++) {
+                result.add(this.one(i));
+            }
+
+            return result;
+        }
+    }
+
+    public final WorkbookPreviewDtoBuilder workbookPreviewDto = new WorkbookPreviewDtoBuilder();
 }

@@ -31,7 +31,7 @@ public class WorkbookPreviewDto {
         this.userProfileImage = userProfileImage;
         this.title = title;
         this.description = description;
-        this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
     }
 }
