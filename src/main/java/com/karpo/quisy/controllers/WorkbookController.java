@@ -21,6 +21,6 @@ public class WorkbookController {
 
     @RequestMapping(value = "workbooks", method = RequestMethod.GET)
     public List<WorkbookPreviewDto> getWorkbooks(@RequestParam(required = false) String title, @RequestParam(required = false) List<String> tags) {
-        return workbookService.getWorkbooks();
+        return workbookService.getWorkbooks(title, tags);
     }
 }
