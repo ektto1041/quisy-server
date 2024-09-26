@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,7 +42,7 @@ class WorkbookControllerTest {
             workbookPreviewDto.setTags(tags);
         }
 
-        given(workbookService.getWorkbooks()).willReturn(workbookPreviewDtos);
+        given(workbookService.getWorkbooks(any(), any())).willReturn(workbookPreviewDtos);
 
         // When & Then
         mvc.perform(get("/api/v1/workbooks")).andExpect(jsonPath("$[3].title").value("Title 3"));

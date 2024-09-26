@@ -1,7 +1,5 @@
 package com.karpo.quisy.repositories;
 
-import com.karpo.quisy.QuisyApplication;
-import com.karpo.quisy.configurations.MySQLConfiguration;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.entities.Tag;
 import com.karpo.quisy.entities.User;
@@ -13,43 +11,63 @@ import com.karpo.quisy.helpers.WorkbookBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ComponentScan(basePackages = {"com.karpo.quisy"})
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2, replace = AutoConfigureTestDatabase.Replace.ANY)
+@TestPropertySource("classpath:application-test.properties") //test용 properties 파일 설정
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {QuisyApplication.class, MySQLConfiguration.class})
 class WorkbookRepositoryTest {
-    @Autowired UserBuilder userBuilder;
-    @Autowired WorkbookBuilder workbookBuilder;
-    @Autowired TagBuilder tagBuilder;
+    UserBuilder userBuilder = new UserBuilder();
+    WorkbookBuilder workbookBuilder = new WorkbookBuilder();
+    TagBuilder tagBuilder = new TagBuilder();
+
     @Autowired WorkbookRepository workbookRepository;
     @Autowired UserRepository userRepository;
     @Autowired TagRepository tagRepository;
     @Autowired WorkbookTagRepository workbookTagRepository;
 
     @Test
-    @DisplayName("모든 Workbook 조회 - Tag 없는 결과")
+    @DisplayName("Search Workbooks")
     void getAllWorkbooks() {
         // Given
-        User savedUser = userRepository.save(userBuilder.one(0));
-        Tag savedTag = tagRepository.save(tagBuilder.one(0));
-        Workbook savedWorkbook = workbookRepository.save(workbookBuilder.one(0, savedUser));
-        WorkbookTag savedWorkbookTag = workbookTagRepository.save(workbookBuilder.addTag(savedWorkbook, savedTag));
+        List<User> savedUsers = userRepository.saveAll(userBuilder.many(10));
+        List<Tag> savedTags = tagRepository.saveAll(tagBuilder.many(10));
+        for(int i=0; i<savedUsers.size(); i++) {
+            User savedUser = savedUsers.get(i);
+            Workbook savedWorkbook = workbookRepository.save(workbookBuilder.one(i, savedUser));
+            WorkbookTag savedWorkbookTag = workbookTagRepository.save(workbookBuilder.addTag(savedWorkbook, savedTags.get(i)));
+        }
 
         // When
         List<WorkbookPreviewDto> allWorkbookPreviews = workbookRepository.getAllWorkbookPreviews();
 
         // Then
-        assertEquals(1, allWorkbookPreviews.size());
-        assertEquals(0, allWorkbookPreviews.get(0).getTags().size());
-        assertEquals("WorkbookTitle 0", allWorkbookPreviews.get(0).getTitle());
+        assertEquals(10, allWorkbookPreviews.size());
+    }
+
+    @Test
+    @DisplayName("Search Workbooks by title")
+    void getWorkbooksByTitle() {
+        // Given
+        List<User> savedUsers = userRepository.saveAll(userBuilder.many(10));
+        List<Tag> savedTags = tagRepository.saveAll(tagBuilder.many(10));
+        for(int i=0; i<savedUsers.size(); i++) {
+            User savedUser = savedUsers.get(i);
+            Workbook savedWorkbook = workbookRepository.save(workbookBuilder.one(Math.min(i, 5), savedUser));
+            WorkbookTag savedWorkbookTag = workbookTagRepository.save(workbookBuilder.addTag(savedWorkbook, savedTags.get(i)));
+        }
+
+        // When
+        List<WorkbookPreviewDto> allWorkbookPreviews = workbookRepository.getAllWorkbookPreviewsByTitle("5");
+
+        // Then
+        assertEquals(5, allWorkbookPreviews.size());
     }
 }
