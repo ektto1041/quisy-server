@@ -1,6 +1,5 @@
 package com.karpo.quisy.services;
 
-import com.karpo.quisy.dtos.TagWithWorkbookIdDto;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.helpers.TagBuilder;
 import com.karpo.quisy.helpers.WorkbookBuilder;
@@ -14,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +43,6 @@ class WorkbookServiceTest {
     @Test
     @DisplayName("Search Workbooks without title and tags")
     void getWorkbooks() {
-        System.out.println(workbookRepository);
         // Given
         when(workbookRepository.getAllWorkbookPreviews()).thenReturn(workbookBuilder.workbookPreviewDto.many(3));
         when(tagRepository.findByWorkbookId(anyList())).thenReturn(tagBuilder.tagWithWorkbookIdDto.many(3, 2));
@@ -73,6 +72,34 @@ class WorkbookServiceTest {
 
         // When
         List<WorkbookPreviewDto> workbooks = workbookService.getWorkbooks("1", null);
+
+        // Then
+        assertEquals(3, workbooks.size());
+    }
+
+    @Test
+    @DisplayName("Search Workbooks by tags")
+    void getWorkbooksByTags() {
+        // Given
+        when(workbookRepository.getAllWorkbookPreviewsByTags(anyList())).thenReturn(workbookBuilder.workbookPreviewDto.many(3));
+        when(tagRepository.findByWorkbookId(anyList())).thenReturn(tagBuilder.tagWithWorkbookIdDto.many(3, 2));
+
+        // When
+        List<WorkbookPreviewDto> workbooks = workbookService.getWorkbooks(null, new ArrayList<>());
+
+        // Then
+        assertEquals(3, workbooks.size());
+    }
+
+    @Test
+    @DisplayName("Search Workbooks by title and tags")
+    void getWorkbooksByTitleAndTags() {
+        // Given
+        when(workbookRepository.getAllWorkbookPreviewsByTitleAndTags(anyString(), anyList())).thenReturn(workbookBuilder.workbookPreviewDto.many(3));
+        when(tagRepository.findByWorkbookId(anyList())).thenReturn(tagBuilder.tagWithWorkbookIdDto.many(3, 2));
+
+        // When
+        List<WorkbookPreviewDto> workbooks = workbookService.getWorkbooks("Title", new ArrayList<>());
 
         // Then
         assertEquals(3, workbooks.size());

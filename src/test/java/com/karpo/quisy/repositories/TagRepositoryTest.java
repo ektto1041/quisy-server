@@ -13,26 +13,24 @@ import com.karpo.quisy.helpers.WorkbookBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ComponentScan(basePackages = {"com.karpo.quisy"})
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {QuisyApplication.class, MySQLConfiguration.class})
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2, replace = AutoConfigureTestDatabase.Replace.ANY)
+@TestPropertySource("classpath:application-test.properties") //test용 properties 파일 설정
 class TagRepositoryTest {
-    @Autowired
-    UserBuilder userBuilder;
-    @Autowired
-    WorkbookBuilder workbookBuilder;
-    @Autowired
-    TagBuilder tagBuilder;
+    UserBuilder userBuilder = new UserBuilder();
+    WorkbookBuilder workbookBuilder = new WorkbookBuilder();
+    TagBuilder tagBuilder = new TagBuilder();
     @Autowired WorkbookRepository workbookRepository;
     @Autowired UserRepository userRepository;
     @Autowired TagRepository tagRepository;

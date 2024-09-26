@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,5 +70,55 @@ class WorkbookRepositoryTest {
 
         // Then
         assertEquals(5, allWorkbookPreviews.size());
+    }
+
+    @Test
+    @DisplayName("Search Workbooks by tags")
+    void getWorkbooksByTags() {
+        // Given
+        List<User> savedUsers = userRepository.saveAll(userBuilder.many(10));
+        List<Tag> savedTags = tagRepository.saveAll(tagBuilder.many(10));
+        for(int i=0; i<savedUsers.size(); i++) {
+            User savedUser = savedUsers.get(i);
+            Workbook savedWorkbook = workbookRepository.save(workbookBuilder.one(i, savedUser));
+
+            for(int j=i; j<i+3; j++) {
+                int id = j >= 10 ? j - 10 : j;
+                workbookTagRepository.save(workbookBuilder.addTag(savedWorkbook, savedTags.get(id)));
+            }
+        }
+
+        // When
+        List<String> tags = new ArrayList<>();
+        tags.add("Tag name 3");
+        List<WorkbookPreviewDto> allWorkbookPreviews = workbookRepository.getAllWorkbookPreviewsByTags(tags);
+
+        // Then
+        assertEquals(3, allWorkbookPreviews.size());
+    }
+
+    @Test
+    @DisplayName("Search Workbooks by title and tags")
+    void getWorkbooksByTitleAndTags() {
+        // Given
+        List<User> savedUsers = userRepository.saveAll(userBuilder.many(10));
+        List<Tag> savedTags = tagRepository.saveAll(tagBuilder.many(10));
+        for(int i=0; i<savedUsers.size(); i++) {
+            User savedUser = savedUsers.get(i);
+            Workbook savedWorkbook = workbookRepository.save(workbookBuilder.one(Math.min(i, 5), savedUser));
+
+            for(int j=i; j<i+3; j++) {
+                int id = j >= 10 ? j - 10 : j;
+                workbookTagRepository.save(workbookBuilder.addTag(savedWorkbook, savedTags.get(id)));
+            }
+        }
+
+        // When
+        List<String> tags = new ArrayList<>();
+        tags.add("Tag name 1");
+        List<WorkbookPreviewDto> allWorkbookPreviews = workbookRepository.getAllWorkbookPreviewsByTitleAndTags("5", tags);
+
+        // Then
+        assertEquals(1, allWorkbookPreviews.size());
     }
 }
