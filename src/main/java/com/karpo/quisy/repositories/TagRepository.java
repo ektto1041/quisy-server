@@ -18,4 +18,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
         "WHERE w.workbookId IN (:workbookIds)"
     )
     List<TagWithWorkbookIdDto> findByWorkbookId(List<Long> workbookIds);
+
+    @Query("FROM Tag t " +
+            "WHERE t.name IN (:tags)")
+    List<Tag> findByName(List<String> tags);
 }
