@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,5 +63,24 @@ class TagRepositoryTest {
                 assertEquals("Tag name " + (i*3+j), dto.getTag());
             }
         }
+    }
+
+    @Test
+    @DisplayName("Tag Name으로 모든 Tag 조회")
+    void findByName() {
+        // Given
+        tagRepository.save(tagBuilder.one(2));
+        tagRepository.save(tagBuilder.one(2));
+        tagRepository.save(tagBuilder.one(1));
+        tagRepository.save(tagBuilder.one(3));
+
+        // When
+        List<String> tags = new ArrayList<>();
+        tags.add("Tag name 1");
+        tags.add("Tag name 2");
+        List<Tag> foundTags = tagRepository.findByName(tags);
+
+        // Then
+        assertEquals(3, foundTags.size());
     }
 }

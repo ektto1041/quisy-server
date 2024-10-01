@@ -1,44 +1,49 @@
 package com.karpo.quisy.services;
 
+import com.karpo.quisy.dtos.NewWorkbookDto;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
+import com.karpo.quisy.entities.Tag;
+import com.karpo.quisy.entities.User;
+import com.karpo.quisy.entities.Workbook;
 import com.karpo.quisy.helpers.TagBuilder;
+import com.karpo.quisy.helpers.UserBuilder;
 import com.karpo.quisy.helpers.WorkbookBuilder;
 import com.karpo.quisy.repositories.TagRepository;
 import com.karpo.quisy.repositories.WorkbookRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class WorkbookServiceTest {
-    private WorkbookBuilder workbookBuilder;
-    private TagBuilder tagBuilder;
+    private UserBuilder userBuilder = new UserBuilder();
+    private WorkbookBuilder workbookBuilder = new WorkbookBuilder();
+    private TagBuilder tagBuilder = new TagBuilder();
 
-    @Mock
+    @MockBean
+    UserService userService;
+    @MockBean
+    TagService tagService;
+    @MockBean
+    WorkbookTagService workbookTagService;
+    @MockBean
     WorkbookRepository workbookRepository;
-    @Mock
+    @MockBean
     TagRepository tagRepository;
 
-    @InjectMocks
+    @Autowired
     WorkbookService workbookService;
-
-    @BeforeEach
-    void setUp() {
-        this.workbookBuilder = new WorkbookBuilder();
-        this.tagBuilder = new TagBuilder();
-    }
 
     @Test
     @DisplayName("Search Workbooks without title and tags")
@@ -103,5 +108,37 @@ class WorkbookServiceTest {
 
         // Then
         assertEquals(3, workbooks.size());
+    }
+
+    @Test
+    @DisplayName("Create new Workbook")
+    void createWorkbook() {
+        // Given
+        User user = userBuilder.one(0);
+        List<Tag> tags = tagBuilder.many(10);
+        List<String> tagNames = new ArrayList<>();
+        for(Tag tag : tags) {
+            tagNames.add(tag.getName());
+        }
+        Workbook workbook = workbookBuilder.one(0, user);
+
+        NewWorkbookDto newWorkbookDto = new NewWorkbookDto();
+        newWorkbookDto.setUserId((long) 0);
+        newWorkbookDto.setTitle("String");
+        newWorkbookDto.setDescription("String");
+        newWorkbookDto.setTags(tagNames);
+
+        when(userService.getUserById(anyLong())).thenReturn(user);
+        when(tagService.createTags(anyList())).thenReturn(tags);
+        when(workbookRepository.save(any())).thenReturn(workbook);
+
+        // When
+        WorkbookPreviewDto workbookPreviewDto = workbookService.createWorkbook(newWorkbookDto);
+
+        // Then
+        assertEquals(0, workbookPreviewDto.getWorkbookId());
+        assertEquals(0, workbookPreviewDto.getUserId());
+        assertEquals(10, workbookPreviewDto.getTags().size());
+
     }
 }
