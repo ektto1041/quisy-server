@@ -1,9 +1,8 @@
 package com.karpo.quisy.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.karpo.quisy.entities.User;
+import com.karpo.quisy.entities.Workbook;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class WorkbookPreviewDto {
     private Long workbookId;
     private Long userId;
@@ -33,5 +33,18 @@ public class WorkbookPreviewDto {
         this.description = description;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+    }
+
+    public static WorkbookPreviewDto from(User user, Workbook workbook) {
+        return WorkbookPreviewDto.builder()
+            .workbookId(workbook.getWorkbookId())
+            .userId(user.getUserId())
+            .userNickname(user.getNickname())
+            .userProfileImage(user.getProfileImage())
+            .title(workbook.getTitle())
+            .description(workbook.getDescription())
+            .createdAt(workbook.getCreatedAt())
+            .updatedAt(workbook.getUpdatedAt())
+            .build();
     }
 }

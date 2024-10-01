@@ -1,0 +1,19 @@
+package com.karpo.quisy.dtos;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class NewWorkbookDto {
+    private Long userId;
+    private String title;
+    private String description;
+    private List<String> tags;
+}

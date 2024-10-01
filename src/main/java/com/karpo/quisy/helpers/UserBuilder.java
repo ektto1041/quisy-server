@@ -10,6 +10,7 @@ import java.util.List;
 public class UserBuilder {
     public User one(int i) {
         User user = new User();
+        user.setUserId((long) i);
         user.setNickname("UserNickname " + i);
         user.setEmail("UserEmail " + i);
         user.setAccessToken("UserAccessToken " + i);

@@ -15,6 +15,7 @@ import java.util.List;
 public class WorkbookBuilder {
     public Workbook one(int i, User user) {
         Workbook workbook = new Workbook();
+        workbook.setWorkbookId((long) i);
         workbook.setTitle("WorkbookTitle " + i);
         workbook.setDescription("WorkbookDescription " + i);
         workbook.setUser(user);
