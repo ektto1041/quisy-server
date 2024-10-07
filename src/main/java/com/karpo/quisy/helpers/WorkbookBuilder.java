@@ -13,9 +13,8 @@ import java.util.List;
 
 @Component
 public class WorkbookBuilder {
-    public Workbook one(int i, User user) {
+    public Workbook oneEntity(int i, User user) {
         Workbook workbook = new Workbook();
-        workbook.setWorkbookId((long) i);
         workbook.setTitle("WorkbookTitle " + i);
         workbook.setDescription("WorkbookDescription " + i);
         workbook.setUser(user);
@@ -23,10 +22,26 @@ public class WorkbookBuilder {
         return workbook;
     }
 
+    public Workbook one(int i, User user) {
+        Workbook workbook = this.oneEntity(i, user);
+        workbook.setWorkbookId((long) i);
+
+        return workbook;
+    }
+
+    public List<Workbook> manyEntity(int max, User user) {
+        List<Workbook> workbooks = new ArrayList<>();
+        for(int i=0; i<max; i++) {
+            workbooks.add(this.oneEntity(i, user));
+        }
+
+        return workbooks;
+    }
+
     public List<Workbook> many(int max, User user) {
         List<Workbook> workbooks = new ArrayList<>();
         for(int i=0; i<max; i++) {
-            workbooks.add(one(i, user));
+            workbooks.add(this.one(i, user));
         }
 
         return workbooks;
