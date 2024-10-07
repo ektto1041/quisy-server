@@ -1,10 +1,13 @@
 package com.karpo.quisy.services;
 
 import com.karpo.quisy.dtos.NewWorkbookDto;
+import com.karpo.quisy.dtos.UpdateWorkbookDto;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.entities.Tag;
 import com.karpo.quisy.entities.User;
 import com.karpo.quisy.entities.Workbook;
+import com.karpo.quisy.entities.WorkbookTag;
+import com.karpo.quisy.exceptions.NotFoundWorkbookException;
 import com.karpo.quisy.helpers.TagBuilder;
 import com.karpo.quisy.helpers.UserBuilder;
 import com.karpo.quisy.helpers.WorkbookBuilder;
@@ -17,11 +20,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -44,6 +52,34 @@ class WorkbookServiceTest {
 
     @Autowired
     WorkbookService workbookService;
+
+    @Test
+    @DisplayName("Search a Workbook By Id")
+    void getWorkbook() {
+        // Given
+        User user = userBuilder.one(0);
+        Workbook workbook = workbookBuilder.one(0, user);
+
+        when(workbookRepository.findById(anyLong())).thenReturn(Optional.of(workbook));
+
+        // When
+        Workbook foundWorkbook = workbookService.getWorkbook((long) 0);
+
+        // Then
+        assertEquals(workbook, foundWorkbook);
+    }
+
+    @Test
+    @DisplayName("Search a Workbook By Id Failed: Not Found Workbook")
+    void getWorkbookNotFoundWorkbook() {
+        // Given
+        given(workbookRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(NotFoundWorkbookException.class, () -> {
+            workbookService.getWorkbook((long) 0);
+        });
+    }
 
     @Test
     @DisplayName("Search Workbooks without title and tags")
@@ -139,6 +175,39 @@ class WorkbookServiceTest {
         assertEquals(0, workbookPreviewDto.getWorkbookId());
         assertEquals(0, workbookPreviewDto.getUserId());
         assertEquals(10, workbookPreviewDto.getTags().size());
+    }
 
+    @Test
+    @DisplayName("Update a Workbook")
+    void updateWorkbook() {
+        // Given
+        UpdateWorkbookDto updateWorkbookDto = new UpdateWorkbookDto();
+        updateWorkbookDto.setTitle("Updated Title");
+        updateWorkbookDto.setDescription("Updated Description");
+        List<String> newTagNames = new ArrayList<>();
+        newTagNames.add("Tag name 0");
+        newTagNames.add("Tag name 2");
+        updateWorkbookDto.setTags(newTagNames);
+
+        User user = userBuilder.one(0);
+        Workbook workbook = workbookBuilder.one(0, user);
+        List<Tag> tags = tagBuilder.many(2);
+        List<WorkbookTag> oldWorkbookTags = workbookBuilder.addTags(workbook, tags);
+        Tag newTag = tagBuilder.one(2);
+        List<Tag> newTags = new ArrayList<>();
+        newTags.add(newTag);
+
+        given(workbookRepository.findById((long) 0)).willReturn(Optional.of(workbook));
+        given(workbookTagService.getWorkbookTagsByWorkbook(workbook)).willReturn(oldWorkbookTags);
+        given(tagService.createTags(any())).willReturn(newTags);
+
+        // When
+        WorkbookPreviewDto workbookPreviewDto = workbookService.updateWorkbook((long) 0, updateWorkbookDto);
+
+        // Then
+        verify(workbookTagService).deleteAll(any());
+        verify(workbookTagService).addTagToWorkbook(workbook, newTags);
+        assertEquals("Updated Title", workbookPreviewDto.getTitle());
+        assertEquals(2, workbookPreviewDto.getTags().size());
     }
 }

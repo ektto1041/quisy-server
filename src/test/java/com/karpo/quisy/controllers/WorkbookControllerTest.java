@@ -2,9 +2,11 @@ package com.karpo.quisy.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karpo.quisy.dtos.NewWorkbookDto;
+import com.karpo.quisy.dtos.UpdateWorkbookDto;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.helpers.WorkbookBuilder;
 import com.karpo.quisy.services.WorkbookService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
@@ -78,6 +80,30 @@ class WorkbookControllerTest {
             post("/api/v1/workbook")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new ObjectMapper().writeValueAsString(newWorkbookDto))
+        ).andExpect(jsonPath("$.title").value("Title 0"));
+    }
+
+    @Test
+    @DisplayName("Update a Workbook Controller")
+    void updateWorkbook() throws Exception {
+        // Given
+        UpdateWorkbookDto updateWorkbookDto = new UpdateWorkbookDto();
+        updateWorkbookDto.setTitle("Updated Title");
+        updateWorkbookDto.setDescription("Updated Description");
+        List<String> newTagNames = new ArrayList<>();
+        newTagNames.add("Tag name 0");
+        newTagNames.add("Tag name 2");
+        updateWorkbookDto.setTags(newTagNames);
+
+        WorkbookPreviewDto workbookPreviewDto = workbookBuilder.workbookPreviewDto.one(0);
+
+        given(workbookService.updateWorkbook(anyLong(), any())).willReturn(workbookPreviewDto);
+
+        // When & Then
+        mvc.perform(
+            put("/api/v1/workbook/0")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(updateWorkbookDto))
         ).andExpect(jsonPath("$.title").value("Title 0"));
     }
 }

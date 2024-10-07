@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +35,23 @@ class WorkbookTagServiceTest {
     private WorkbookTagService workbookTagService;
 
     @Test
+    @DisplayName("Search WorkbookTags by Workbook")
+    void getWorkbookTagsByWorkbook() {
+        // Given
+        User user = userBuilder.one(0);
+        Workbook workbook = workbookBuilder.one(0, user);
+        List<Tag> tags = tagBuilder.many(2);
+        List<WorkbookTag> workbookTags = workbookBuilder.addTags(workbook, tags);
+        when(workbookTagRepository.findByWorkbook(workbook)).thenReturn(workbookTags);
+
+        // When
+        List<WorkbookTag> foundWorkbookTags = workbookTagService.getWorkbookTagsByWorkbook(workbook);
+
+        // Then
+        assertEquals(workbookTags, foundWorkbookTags);
+    }
+
+    @Test
     @DisplayName("Add Tags to Workbook")
     void addTagToWorkbook() {
         // Given
@@ -49,5 +65,21 @@ class WorkbookTagServiceTest {
 
         // Then
         verify(workbookTagRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    @DisplayName("Delete All WorkbookTag")
+    void deleteAll() {
+        // Given
+        User user = userBuilder.one(0);
+        Workbook workbook = workbookBuilder.one(0, user);
+        List<Tag> tags = tagBuilder.many(10);
+        List<WorkbookTag> workbookTags = workbookBuilder.addTags(workbook, tags);
+
+        // When
+        workbookTagService.deleteAll(workbookTags);
+
+        // Then
+        verify(workbookTagRepository).deleteAll(workbookTags);
     }
 }

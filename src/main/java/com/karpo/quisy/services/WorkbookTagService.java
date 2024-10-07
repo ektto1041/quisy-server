@@ -18,6 +18,10 @@ public class WorkbookTagService {
         this.workbookTagRepository = workbookTagRepository;
     }
 
+    public List<WorkbookTag> getWorkbookTagsByWorkbook(Workbook workbook) {
+        return workbookTagRepository.findByWorkbook(workbook);
+    }
+
     @Transactional
     public void addTagToWorkbook(Workbook workbook, List<Tag> tags) {
         List<WorkbookTag> workbookTags = new ArrayList<>();
@@ -29,5 +33,10 @@ public class WorkbookTagService {
         }
 
         workbookTagRepository.saveAll(workbookTags);
+    }
+
+    @Transactional
+    public void deleteAll(List<WorkbookTag> workbookTagsToDelete) {
+        workbookTagRepository.deleteAll(workbookTagsToDelete);
     }
 }
