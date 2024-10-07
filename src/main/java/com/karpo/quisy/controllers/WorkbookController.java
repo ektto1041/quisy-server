@@ -1,6 +1,7 @@
 package com.karpo.quisy.controllers;
 
 import com.karpo.quisy.dtos.NewWorkbookDto;
+import com.karpo.quisy.dtos.UpdateWorkbookDto;
 import com.karpo.quisy.dtos.WorkbookPreviewDto;
 import com.karpo.quisy.repositories.WorkbookRepository;
 import com.karpo.quisy.services.WorkbookService;
@@ -25,5 +26,10 @@ public class WorkbookController {
     @RequestMapping(value = "workbook", method = RequestMethod.POST)
     public WorkbookPreviewDto createWorkbook(@RequestBody NewWorkbookDto newWorkbook) {
         return workbookService.createWorkbook(newWorkbook);
+    }
+
+    @RequestMapping(value = "workbook/{workbookId}", method = RequestMethod.PUT)
+    public WorkbookPreviewDto updateWorkbook(@RequestBody UpdateWorkbookDto updateWorkbookDto, @PathVariable Long workbookId) {
+        return workbookService.updateWorkbook(workbookId, updateWorkbookDto);
     }
 }
