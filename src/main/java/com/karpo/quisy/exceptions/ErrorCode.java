@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
     NOT_FOUND_USER("E000", "유저를 찾을 수 없습니다"),
+    NOT_FOUND_WORKBOOK("E001", "문제집을 찾을 수 없습니다"),
     UNKNOWN_ERROR("E999", "알 수 없는 에러");
 
     private final String code;
