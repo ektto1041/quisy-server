@@ -1,6 +1,7 @@
 package com.karpo.quisy.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -14,13 +15,14 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @Getter
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long questionId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "question_type_id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private QuestionType questionType;
@@ -29,7 +31,7 @@ public class Question {
 
     private String answer;
 
-    private int sequence;
+    private Long sequence;
 
     @ManyToOne
     @JoinColumn(name = "workbook_id", nullable = false)
