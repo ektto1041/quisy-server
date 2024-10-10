@@ -1,12 +1,9 @@
 package com.karpo.quisy.repositories;
 
-import com.karpo.quisy.QuisyApplication;
-import com.karpo.quisy.configurations.MySQLConfiguration;
 import com.karpo.quisy.dtos.TagWithWorkbookIdDto;
 import com.karpo.quisy.entities.Tag;
 import com.karpo.quisy.entities.User;
 import com.karpo.quisy.entities.Workbook;
-import com.karpo.quisy.entities.WorkbookTag;
 import com.karpo.quisy.helpers.TagBuilder;
 import com.karpo.quisy.helpers.UserBuilder;
 import com.karpo.quisy.helpers.WorkbookBuilder;
@@ -16,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
